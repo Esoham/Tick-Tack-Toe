@@ -1,5 +1,4 @@
 ﻿using System;
-
 namespace Tick_Toe
 {
     public class GameLogic
