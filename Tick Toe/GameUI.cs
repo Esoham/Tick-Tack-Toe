@@ -14,7 +14,7 @@ namespace Tick_Toe
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    Console.Write(board[i, j] + " ");
+                    Console.Write($"{board[i, j]} ");
                 }
                 Console.WriteLine();
             }

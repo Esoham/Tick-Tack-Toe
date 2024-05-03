@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Tick_Toe
 {
     public class GameLogic
@@ -46,14 +47,12 @@ namespace Tick_Toe
             // Horizontal, vertical, and diagonal checks
             for (int i = 0; i < 3; i++)
             {
-                if (Board[i, 0] == player && Board[i, 1] == player && Board[i, 2] == player)
-                    return true;
-                if (Board[0, i] == player && Board[1, i] == player && Board[2, i] == player)
+                if ((Board[i, 0] == player && Board[i, 1] == player && Board[i, 2] == player) ||
+                    (Board[0, i] == player && Board[1, i] == player && Board[2, i] == player))
                     return true;
             }
-            if (Board[0, 0] == player && Board[1, 1] == player && Board[2, 2] == player)
-                return true;
-            if (Board[0, 2] == player && Board[1, 1] == player && Board[2, 0] == player)
+            if ((Board[0, 0] == player && Board[1, 1] == player && Board[2, 2] == player) ||
+                (Board[0, 2] == player && Board[1, 1] == player && Board[2, 0] == player))
                 return true;
 
             return false;
@@ -88,7 +87,7 @@ namespace Tick_Toe
                             Winner = 'O';
                             return;
                         }
-                        return;
+                        return; // This ensures only one move is made
                     }
                 }
             }
