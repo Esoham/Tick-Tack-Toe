@@ -10,9 +10,9 @@ namespace Tick_Toe
 
         public static void DisplayBoard(char[,] board)
         {
-            for (int i = 0; i < Constants.GridSize; i++)
+            for (int i = 0; i < Constants.GRID_SIZE; i++)
             {
-                for (int j = 0; j < Constants.GridSize; j++)
+                for (int j = 0; j < Constants.GRID_SIZE; j++)
                 {
                     Console.Write(board[i, j] + " ");
                 }
@@ -20,43 +20,46 @@ namespace Tick_Toe
             }
         }
 
-        public static int[] GetUserMove()
+        public static (int, int) GetUserMove(GameLogic gameLogic)
         {
             Console.WriteLine("Enter your move (row, column):");
-            int row, col;
             while (true)
             {
-                if (Int32.TryParse(Console.ReadLine(), out row) && row >= 0 && row < Constants.GridSize)
+                string? input = Console.ReadLine();  // Accept input as potentially nullable
+                if (input != null)  // Check for null to safely use the split method
                 {
-                    if (Int32.TryParse(Console.ReadLine(), out col) && col >= 0 && col < Constants.GridSize)
+                    string[] parts = input.Split(',');
+                    if (parts.Length == 2
+                        && int.TryParse(parts[0], out int row) && row >= 0 && row < Constants.GRID_SIZE
+                        && int.TryParse(parts[1], out int col) && col >= 0 && col < Constants.GRID_SIZE)
                     {
-                        return new int[] { row, col }; // Return valid move
+                        if (gameLogic.Board[row, col] == '-')  // Access Board using the passed GameLogic instance
+                        {
+                            return (row, col);
+                        }
+                        else
+                        {
+                            Console.WriteLine("This spot is already taken, please choose another.");
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("Invalid column. Please enter a number between 0 and " + (Constants.GridSize - 1) + ".");
+                        Console.WriteLine($"Invalid input. Please enter row and column as two numbers separated by a comma, each between 0 and {Constants.GRID_SIZE - 1}.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Invalid row. Please enter a number between 0 and " + (Constants.GridSize - 1) + ".");
+                    Console.WriteLine("No input provided. Please try again:");
                 }
-                Console.WriteLine("Please re-enter your move (row, column):");
             }
         }
 
         public static void DisplayResult(char winner)
         {
-            if (winner == Constants.TieSymbol)
+            if (winner == Constants.TIE_SYMBOL)
                 Console.WriteLine("The game is a tie!");
             else
                 Console.WriteLine($"Player {winner} wins!");
         }
-    }
-
-    public static class Constants
-    {
-        public const int GridSize = 3; // Size of the Tic Tac Toe grid
-        public const char TieSymbol = 'T'; // Symbol used to represent a tie in the game
     }
 }

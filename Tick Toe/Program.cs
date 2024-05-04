@@ -1,5 +1,4 @@
 ﻿using System;
-using Tick_Toe;
 
 namespace Tick_Toe
 {
@@ -13,8 +12,8 @@ namespace Tick_Toe
             while (!game.GameOver)
             {
                 GameUI.DisplayBoard(game.Board);
-                int[] move = GameUI.GetUserMove();
-                game.MakeMove(move[0], move[1], 'X'); // Player's move
+                (int row, int col) = GameUI.GetUserMove(game);  // Pass the game instance here
+                game.MakeMove(row, col, 'X');
 
                 if (!game.GameOver)
                 {
