@@ -7,7 +7,7 @@ namespace Tick_Toe
         public char[,] Board { get; private set; } = new char[Constants.GRID_SIZE, Constants.GRID_SIZE];
         public bool GameOver { get; private set; } = false;
         public char Winner { get; private set; } = ' ';
-        private Random rand = new Random();  // Random instance for AI moves
+        private static readonly Random rand = new Random();
 
         public GameLogic()
         {
@@ -32,6 +32,17 @@ namespace Tick_Toe
                 Board[row, col] = player;
                 UpdateGameState(player);
             }
+            else
+            {
+                throw new InvalidOperationException("Attempted to make a move on an occupied spot.");
+            }
+        }
+
+        public bool IsValidMove(int row, int col)
+        {
+            return row >= 0 && row < Constants.GRID_SIZE &&
+                   col >= 0 && col < Constants.GRID_SIZE &&
+                   Board[row, col] == '-';
         }
 
         public void MakeAIMove()
@@ -39,8 +50,11 @@ namespace Tick_Toe
             int[]? bestMove = FindBestMove('O') ?? FindBestMove('X') ?? TakeCenterOrCorner() ?? RandomMove();
             if (bestMove != null)
             {
-                Board[bestMove[0], bestMove[1]] = 'O';
-                UpdateGameState('O');
+                MakeMove(bestMove[0], bestMove[1], 'O');
+            }
+            else
+            {
+                throw new InvalidOperationException("No valid moves available for AI.");
             }
         }
 
@@ -53,12 +67,12 @@ namespace Tick_Toe
                     if (Board[i, j] == '-')
                     {
                         Board[i, j] = player;
-                        bool win = CheckForWin(player);
-                        Board[i, j] = '-';
-                        if (win)
+                        if (CheckForWin(player))
                         {
+                            Board[i, j] = '-';
                             return new int[] { i, j };
                         }
+                        Board[i, j] = '-';
                     }
                 }
             }
@@ -67,13 +81,15 @@ namespace Tick_Toe
 
         private int[]? TakeCenterOrCorner()
         {
-            // Prioritize center
-            if (Board[1, 1] == '-')
+            // Center position (for a 3x3 grid)
+            int center = Constants.GRID_SIZE / 2;
+            if (Board[center, center] == '-')
             {
-                return new int[] { 1, 1 };
+                return new int[] { center, center };
             }
-            // Try corners
-            int[][] corners = { new int[] { 0, 0 }, new int[] { 0, 2 }, new int[] { 2, 0 }, new int[] { 2, 2 } };
+
+            // Corners
+            int[][] corners = { new int[] { 0, 0 }, new int[] { 0, Constants.GRID_SIZE - 1 }, new int[] { Constants.GRID_SIZE - 1, 0 }, new int[] { Constants.GRID_SIZE - 1, Constants.GRID_SIZE - 1 } };
             foreach (int[] corner in corners)
             {
                 if (Board[corner[0], corner[1]] == '-')
@@ -86,18 +102,18 @@ namespace Tick_Toe
 
         private int[]? RandomMove()
         {
-            List<int[]> moves = new List<int[]>();
+            List<int[]> availableMoves = new List<int[]>();
             for (int i = 0; i < Constants.GRID_SIZE; i++)
             {
                 for (int j = 0; j < Constants.GRID_SIZE; j++)
                 {
                     if (Board[i, j] == '-')
                     {
-                        moves.Add(new int[] { i, j });
+                        availableMoves.Add(new int[] { i, j });
                     }
                 }
             }
-            return moves.Count > 0 ? moves[rand.Next(moves.Count)] : null;
+            return availableMoves.Count > 0 ? availableMoves[rand.Next(availableMoves.Count)] : null;
         }
 
         private void UpdateGameState(char player)
@@ -116,20 +132,26 @@ namespace Tick_Toe
 
         private bool CheckForWin(char player)
         {
-            // Check rows and columns
             for (int i = 0; i < Constants.GRID_SIZE; i++)
             {
-                if (Board[i, 0] == player && Board[i, 1] == player && Board[i, 2] == player)
-                    return true;
-                if (Board[0, i] == player && Board[1, i] == player && Board[2, i] == player)
-                    return true;
+                bool rowWin = true;
+                bool colWin = true;
+                for (int j = 0; j < Constants.GRID_SIZE; j++)
+                {
+                    rowWin &= (Board[i, j] == player);
+                    colWin &= (Board[j, i] == player);
+                }
+                if (rowWin || colWin) return true;
             }
 
-            // Check diagonals
-            if (Board[0, 0] == player && Board[1, 1] == player && Board[2, 2] == player)
-                return true;
-            if (Board[0, 2] == player && Board[1, 1] == player && Board[2, 0] == player)
-                return true;
+            bool diag1Win = true;
+            bool diag2Win = true;
+            for (int i = 0; i < Constants.GRID_SIZE; i++)
+            {
+                diag1Win &= (Board[i, i] == player);
+                diag2Win &= (Board[i, Constants.GRID_SIZE - 1 - i] == player);
+            }
+            if (diag1Win || diag2Win) return true;
 
             return false;
         }
