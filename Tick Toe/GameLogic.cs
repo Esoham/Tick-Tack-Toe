@@ -20,14 +20,14 @@ namespace Tick_Toe
             {
                 for (int j = 0; j < Constants.GRID_SIZE; j++)
                 {
-                    Board[i, j] = '-';
+                    Board[i, j] = Constants.EmptyCell;  // Use constant for empty cell
                 }
             }
         }
 
         public void MakeMove(int row, int col, char player)
         {
-            if (Board[row, col] == '-')
+            if (Board[row, col] == Constants.EmptyCell)
             {
                 Board[row, col] = player;
                 UpdateGameState(player);
@@ -42,15 +42,15 @@ namespace Tick_Toe
         {
             return row >= 0 && row < Constants.GRID_SIZE &&
                    col >= 0 && col < Constants.GRID_SIZE &&
-                   Board[row, col] == '-';
+                   Board[row, col] == Constants.EmptyCell;
         }
 
         public void MakeAIMove()
         {
-            int[]? bestMove = FindBestMove('O') ?? FindBestMove('X') ?? TakeCenterOrCorner() ?? RandomMove();
+            int[]? bestMove = FindBestMove(Constants.AISymbol) ?? FindBestMove(Constants.PlayerSymbol) ?? TakeCenterOrCorner() ?? RandomMove();
             if (bestMove != null)
             {
-                MakeMove(bestMove[0], bestMove[1], 'O');
+                MakeMove(bestMove[0], bestMove[1], Constants.AISymbol);
             }
             else
             {
@@ -60,42 +60,27 @@ namespace Tick_Toe
 
         private int[]? FindBestMove(char player)
         {
+            List<int[]> availableMoves = new List<int[]>();
             for (int i = 0; i < Constants.GRID_SIZE; i++)
             {
                 for (int j = 0; j < Constants.GRID_SIZE; j++)
                 {
-                    if (Board[i, j] == '-')
+                    if (Board[i, j] == Constants.EmptyCell)
                     {
-                        Board[i, j] = player;
-                        if (CheckForWin(player))
-                        {
-                            Board[i, j] = '-';
-                            return new int[] { i, j };
-                        }
-                        Board[i, j] = '-';
+                        availableMoves.Add(new int[] { i, j });
                     }
                 }
             }
-            return null;
+            return availableMoves.Count > 0 ? availableMoves[rand.Next(availableMoves.Count)] : null;
         }
 
         private int[]? TakeCenterOrCorner()
         {
-            // Center position (for a 3x3 grid)
-            int center = Constants.GRID_SIZE / 2;
-            if (Board[center, center] == '-')
+            var positions = new List<int[]> { new int[] { 0, 0 }, new int[] { 0, 2 }, new int[] { 2, 0 }, new int[] { 2, 2 }, new int[] { 1, 1 } };
+            foreach (var pos in positions)
             {
-                return new int[] { center, center };
-            }
-
-            // Corners
-            int[][] corners = { new int[] { 0, 0 }, new int[] { 0, Constants.GRID_SIZE - 1 }, new int[] { Constants.GRID_SIZE - 1, 0 }, new int[] { Constants.GRID_SIZE - 1, Constants.GRID_SIZE - 1 } };
-            foreach (int[] corner in corners)
-            {
-                if (Board[corner[0], corner[1]] == '-')
-                {
-                    return corner;
-                }
+                if (Board[pos[0], pos[1]] == Constants.EmptyCell)
+                    return pos;
             }
             return null;
         }
@@ -107,13 +92,13 @@ namespace Tick_Toe
             {
                 for (int j = 0; j < Constants.GRID_SIZE; j++)
                 {
-                    if (Board[i, j] == '-')
-                    {
+                    if (Board[i, j] == Constants.EmptyCell)
                         availableMoves.Add(new int[] { i, j });
-                    }
                 }
             }
-            return availableMoves.Count > 0 ? availableMoves[rand.Next(availableMoves.Count)] : null;
+            if (availableMoves.Count > 0)
+                return availableMoves[rand.Next(availableMoves.Count)];
+            return null;
         }
 
         private void UpdateGameState(char player)
@@ -162,7 +147,7 @@ namespace Tick_Toe
             {
                 for (int j = 0; j < Constants.GRID_SIZE; j++)
                 {
-                    if (Board[i, j] == '-')
+                    if (Board[i, j] == Constants.EmptyCell)
                         return false;
                 }
             }

@@ -10,25 +10,33 @@ class Program
             GameUI.DisplayBoard(game);  // Assuming DisplayBoard now requires the entire game object
             try
             {
-                (int row, int column) = GameUI.GetUserMove(game);  // Passing the game object
-                if (game.IsValidMove(row, column))  // Make sure this method is implemented in GameLogic
+                var move = GameUI.GetUserMove(game);  // Handling nullable tuple
+                if (move.HasValue)
                 {
-                    game.MakeMove(row, column, Constants.PlayerSymbol);  // Define PlayerSymbol in Constants
-                    if (game.GameOver)
+                    (int row, int column) = move.Value;
+                    if (game.IsValidMove(row, column))  // Make sure this method is implemented in GameLogic
                     {
-                        Console.WriteLine("Game over!");
-                        break;
+                        game.MakeMove(row, column, Constants.PlayerSymbol);  // Define PlayerSymbol in Constants
+                        if (game.GameOver)
+                        {
+                            Console.WriteLine("Game over!");
+                            break;
+                        }
+                        game.MakeAIMove();
+                        if (game.GameOver)
+                        {
+                            Console.WriteLine("Game over!");
+                            break;
+                        }
                     }
-                    game.MakeAIMove();
-                    if (game.GameOver)
+                    else
                     {
-                        Console.WriteLine("Game over!");
-                        break;
+                        Console.WriteLine("Invalid move, please try again.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Invalid move, please try again.");
+                    Console.WriteLine("No valid move entered, please try again.");
                 }
             }
             catch (FormatException)

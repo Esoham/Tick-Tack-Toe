@@ -4,4 +4,7 @@
     public const char PlayerSymbol = 'X';
     public const char AISymbol = 'O';
     public const char TIE_SYMBOL = 'T'; // Example: 'T' for Tie, adjust as needed
+    public const char EmptyCell = '-';
+    public const char InputSeparator = ',';
+    public const char Space = ' '; // This is optional, only add if you foresee using it elsewhere in the code
 }
