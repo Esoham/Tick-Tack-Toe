@@ -5,18 +5,18 @@ class Program
     static void Main(string[] args)
     {
         var game = new GameLogic();
-        while (true)
+        while (!game.GameOver)
         {
-            GameUI.DisplayBoard(game);  // Assuming DisplayBoard now requires the entire game object
+            GameUI.DisplayBoard(game);
             try
             {
-                var move = GameUI.GetUserMove(game);  // Handling nullable tuple
+                var move = GameUI.GetUserMove(game);
                 if (move.HasValue)
                 {
                     (int row, int column) = move.Value;
-                    if (game.IsValidMove(row, column))  // Make sure this method is implemented in GameLogic
+                    if (game.IsMoveLegal(row, column))
                     {
-                        game.MakeMove(row, column, Constants.PlayerSymbol);  // Define PlayerSymbol in Constants
+                        game.MakeMove(row, column, Constants.PlayerSymbol);
                         if (game.GameOver)
                         {
                             Console.WriteLine("Game over!");

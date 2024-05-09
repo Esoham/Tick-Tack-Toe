@@ -1,10 +1,8 @@
 ﻿using System;
-
 namespace Tick_Toe
 {
     public static class GameUI
     {
-        // Method to display the game board
         public static void DisplayBoard(GameLogic gameLogic)
         {
             for (int i = 0; i < Constants.GRID_SIZE; i++)
@@ -13,24 +11,10 @@ namespace Tick_Toe
                 {
                     Console.Write(gameLogic.Board[i, j] + " ");
                 }
-                Console.WriteLine(); // Move to the next line after each row
+                Console.WriteLine();
             }
         }
 
-        // Updated IsValidIndex to return a tuple with a boolean and indexes
-        private static (bool, int, int) IsValidIndex(string input)
-        {
-            string[] parts = input.Split(',');
-            if (parts.Length == 2 &&
-                int.TryParse(parts[0].Trim(), out int row) && row >= 0 && row < Constants.GRID_SIZE &&
-                int.TryParse(parts[1].Trim(), out int col) && col >= 0 && col < Constants.GRID_SIZE)
-            {
-                return (true, row, col);
-            }
-            return (false, -1, -1);  // Return false with invalid indices
-        }
-
-        // Updated GetUserMove to handle the new IsValidIndex structure and return a nullable tuple
         public static (int, int)? GetUserMove(GameLogic gameLogic)
         {
             Console.WriteLine("Enter your move (row, column):");
@@ -40,31 +24,38 @@ namespace Tick_Toe
                 if (string.IsNullOrEmpty(input))
                 {
                     DisplayNoInputMessage();
-                    continue;  // Prompt for input again instead of returning null
+                    return null;
                 }
 
-                var (isValid, row, col) = IsValidIndex(input);
+                var (isValid, row, col) = IsValidInputFormat(input);
                 if (isValid)
                 {
-                    if (IsValidMove(gameLogic, row, col))
+                    if (gameLogic.IsMoveLegal(row, col))
                     {
-                        return (row, col);  // Valid move
+                        return (row, col);
                     }
                     else
                     {
-                        DisplayTakenMessage();  // Inform the spot is taken
+                        DisplayTakenMessage();
                     }
                 }
                 else
                 {
-                    DisplayInvalidInputMessage();  // Inform invalid input
+                    DisplayInvalidInputMessage();
                 }
             }
         }
 
-        private static bool IsValidMove(GameLogic gameLogic, int row, int col)
+        private static (bool, int, int) IsValidInputFormat(string input)
         {
-            return gameLogic.Board[row, col] == Constants.EmptyCell;
+            string[] parts = input.Split(',');
+            if (parts.Length == 2 &&
+                int.TryParse(parts[0].Trim(), out int row) && row >= 0 && row < Constants.GRID_SIZE &&
+                int.TryParse(parts[1].Trim(), out int col) && col >= 0 && col < Constants.GRID_SIZE)
+            {
+                return (true, row, col);
+            }
+            return (false, -1, -1);
         }
 
         private static void DisplayTakenMessage()
