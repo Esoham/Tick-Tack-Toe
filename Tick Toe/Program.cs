@@ -1,51 +1,48 @@
 ﻿using System;
 using Tick_Toe;
+
 class Program
 {
     static void Main(string[] args)
     {
         var game = new GameLogic();
+        Console.WriteLine(Constants.WelcomeMessage);
+
         while (!game.GameOver)
         {
             GameUI.DisplayBoard(game);
             try
             {
-                var move = GameUI.GetUserMove(game);
-                if (move.HasValue)
+                // Player's turn
+                if (!game.GameOver)
                 {
-                    (int row, int column) = move.Value;
-                    if (game.IsMoveLegal(row, column))
+                    var move = GameUI.GetUserMove(game);
+                    game.MakeMove(move.Item1, move.Item2, Constants.PlayerSymbol);
+                    if (game.GameOver)
                     {
-                        game.MakeMove(row, column, Constants.PlayerSymbol);
-                        if (game.GameOver)
-                        {
-                            Console.WriteLine("Game over!");
-                            break;
-                        }
-                        game.MakeAIMove();
-                        if (game.GameOver)
-                        {
-                            Console.WriteLine("Game over!");
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid move, please try again.");
+                        Console.WriteLine(game.Winner != Constants.EmptyCell ? $"Winner: {game.Winner}" : Constants.TieMessage);
+                        break;
                     }
                 }
-                else
+
+                // AI's turn
+                if (!game.GameOver)
                 {
-                    Console.WriteLine("No valid move entered, please try again.");
+                    game.MakeAIMove();
+                    if (game.GameOver)
+                    {
+                        Console.WriteLine(game.Winner != Constants.EmptyCell ? $"Winner: {game.Winner}" : Constants.TieMessage);
+                        break;
+                    }
                 }
             }
             catch (FormatException)
             {
-                Console.WriteLine("Invalid input, please enter numbers only.");
+                Console.WriteLine(Constants.InputNumbersOnlyError);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected error: {ex.Message}");
+                Console.WriteLine(Constants.ErrorMessage + ex.Message);
             }
         }
     }
