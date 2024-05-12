@@ -14,8 +14,12 @@
         private void InitializeBoard()
         {
             for (int i = 0; i < Constants.GridSize; i++)
+            {
                 for (int j = 0; j < Constants.GridSize; j++)
+                {
                     Board[i, j] = Constants.EmptyCell;
+                }
+            }
         }
 
         public bool IsValidIndex(int row, int col)
@@ -51,35 +55,59 @@
             else if (CheckForTie())
             {
                 GameOver = true;
-                Winner = Constants.EmptyCell;  // Signifies a tie
+                Winner = Constants.EmptyCell;
             }
         }
 
         private bool CheckForWin(char playerSymbol)
         {
-            // Checking logic as provided
-            // Check rows, columns, and diagonals
-            return false; // Placeholder
+            // Check rows and columns for wins
+            for (int i = 0; i < Constants.GridSize; i++)
+            {
+                if (Board[i, 0] == playerSymbol && Board[i, 1] == playerSymbol && Board[i, 2] == playerSymbol)
+                    return true;
+                if (Board[0, i] == playerSymbol && Board[1, i] == playerSymbol && Board[2, i] == playerSymbol)
+                    return true;
+            }
+
+            // Check diagonals for wins
+            if (Board[0, 0] == playerSymbol && Board[1, 1] == playerSymbol && Board[2, 2] == playerSymbol)
+                return true;
+            if (Board[0, 2] == playerSymbol && Board[1, 1] == playerSymbol && Board[2, 0] == playerSymbol)
+                return true;
+
+            return false;
         }
 
         private bool CheckForTie()
         {
-            // Check if there are no empty spaces left
-            return false; // Placeholder
-        }
+            if (CheckForWin(Constants.PlayerSymbol) || CheckForWin(Constants.AISymbol))
+                return false;
 
-        public void MakeAIMove()  // AI move method
-        {
             for (int i = 0; i < Constants.GridSize; i++)
             {
                 for (int j = 0; j < Constants.GridSize; j++)
                 {
                     if (Board[i, j] == Constants.EmptyCell)
-                    {
-                        Board[i, j] = Constants.AISymbol;
-                        CheckGameStatus(Constants.AISymbol);
-                        return;
-                    }
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        public void MakeAIMove()
+        {
+            Random rand = new Random();
+            while (true)
+            {
+                int row = rand.Next(Constants.GridSize);
+                int col = rand.Next(Constants.GridSize);
+                if (IsMoveLegal(row, col))
+                {
+                    Board[row, col] = Constants.AISymbol;
+                    CheckGameStatus(Constants.AISymbol);
+                    break;
                 }
             }
         }

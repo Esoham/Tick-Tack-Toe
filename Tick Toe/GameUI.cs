@@ -7,10 +7,10 @@
             Console.WriteLine(Constants.EnterMovePrompt);
             while (true)
             {
-                string input = Console.ReadLine();
-                if (input == null)
+                string? input = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(input))
                 {
-                    Console.WriteLine("No input provided. Please try again.");
+                    Console.WriteLine(Constants.NoInputMessage);
                     continue;
                 }
 
@@ -19,7 +19,7 @@
                 {
                     return (row, col);
                 }
-                Console.WriteLine(isValid ? Constants.SpotTakenMessage : Constants.InvalidInputMessage);
+                Console.WriteLine(isValid ? Constants.InvalidMoveAttemptMessage : Constants.InvalidInputMessage);
             }
         }
 
