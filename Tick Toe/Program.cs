@@ -1,62 +1,35 @@
-﻿using System;
-using Tick_Toe;
-class Program
+﻿namespace Tick_Toe
 {
-    static void Main(string[] args)
+    class Program
     {
-        var game = new GameLogic();
-        Console.WriteLine(Constants.WelcomeMessage);
-
-        // Game loop continues until the game is over
-        while (!game.GameOver)
+        static void Main(string[] args)
         {
-            // Display the current state of the game board
-            GameUI.DisplayBoard(game);
+            Console.WriteLine(Messages.WelcomeMessage);
+            GameLogic gameLogic = new GameLogic();
+            GameUI.DisplayBoard(gameLogic);
 
-            // Handle player's turn
-            if (!game.GameOver)
+            while (!gameLogic.GameOver)
             {
-                bool validMoveMade = false;
-                while (!validMoveMade)
+                var (row, col) = GameUI.GetUserMove(gameLogic);
+                try
                 {
-                    try
-                    {
-                        var move = GameUI.GetUserMove(game);
-                        game.MakeMove(move.Item1, move.Item2, Constants.PlayerSymbol);
-                        validMoveMade = true;  // Move was successful, break out of the loop
-                        if (game.GameOver)
-                        {
-                            // Announce the result and exit the game loop if the game is over
-                            Console.WriteLine(game.Winner != Constants.EmptyCell ? $"Winner: {game.Winner}" : Constants.TieMessage);
-                            break;
-                        }
-                    }
-                    catch (FormatException)
-                    {
-                        Console.WriteLine(Constants.InputNumbersOnlyError);
-                    }
-                    catch (InvalidOperationException ex)  // Catching invalid move exceptions specifically
-                    {
-                        Console.WriteLine(ex.Message);  // Message like "This spot is already taken"
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(Constants.ErrorMessage + ex.Message);  // Other unexpected errors
-                    }
+                    gameLogic.MakeMove(row, col, Constants.PlayerSymbol);
                 }
-            }
-
-            // Handle AI's turn
-            if (!game.GameOver)
-            {
-                game.MakeAIMove();
-                if (game.GameOver)
+                catch (InvalidOperationException ex)
                 {
-                    // Announce the result and exit the game loop if the game is over
-                    Console.WriteLine(game.Winner != Constants.EmptyCell ? $"Winner: {game.Winner}" : Constants.TieMessage);
+                    Console.WriteLine(ex.Message);
+                    continue; // If move is invalid, prompt for input again
+                }
+                GameUI.DisplayBoard(gameLogic);
+
+                if (gameLogic.GameOver)
                     break;
-                }
+
+                gameLogic.MakeAIMove();
+                GameUI.DisplayBoard(gameLogic);
             }
+
+            Console.WriteLine(gameLogic.Winner == Constants.EmptyCell ? Messages.TieMessage : $"{Messages.WinnerMessage} {gameLogic.Winner}");
         }
     }
 }
