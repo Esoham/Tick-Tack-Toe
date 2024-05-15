@@ -1,9 +1,12 @@
-﻿public static class Constants
+﻿namespace Tick_Toe
 {
-    public const char PlayerSymbol = 'X'; // Symbol for player
-    public const char AISymbol = 'O'; // Symbol for AI
-    public const char EmptyCell = '-'; // Placeholder for empty cells
-    public const int GridSize = 3; // Tic Tac Toe grid size
-    public const char InputSeparator = ','; // Separator for parsing input
-    public const string CellSpacing = " "; // Space between cells for display
+    public static class Constants
+    {
+        public const char PLAYER_SYMBOL = 'X';
+        public const char AI_SYMBOL = 'O';
+        public const char EMPTY_CELL = '-';
+        public const int GRID_SIZE = 3;
+        public const char INPUT_SEPARATOR = ',';
+        public const string CELL_SPACING = " ";
+    }
 }
