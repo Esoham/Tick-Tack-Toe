@@ -1,4 +1,6 @@
-﻿namespace Tick_Toe
+﻿using System;
+
+namespace Tick_Toe
 {
     public static class GameUI
     {
@@ -71,6 +73,12 @@
             {
                 Console.WriteLine($"{Messages.WINNER_MESSAGE} {winner}");
             }
+        }
+
+        public static void DisplayMessage(string message)
+        {
+            // Improved message display with additional formatting or logging if needed
+            Console.WriteLine($"[INFO]: {message}");
         }
     }
 }
